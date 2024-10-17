@@ -1,0 +1,2 @@
+Error: Could not find or load main class LeerNombre
+Caused by: java.lang.ClassNotFoundException: LeerNombre

@@ -1,0 +1,1 @@
+Cadena escrita: Hola mundo!
