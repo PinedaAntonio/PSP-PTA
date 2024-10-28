@@ -1,4 +1,4 @@
-package ej3;
+package ej4;
 
 import java.applet.Applet;
 import java.awt.*;
@@ -6,11 +6,13 @@ import java.awt.event.*;
 
 // Clase que extiende Thread y actúa como un contador
 class HiloContador extends Thread {
-    private long contador;
+    private int contador;
     private boolean parar;
-    private ContadorEj3 applet; // Referencia al applet para llamar a repaint()
+    private ContadorEj8 applet;
+    public boolean running = true;
+    public SolicitaSuspender suspender = new SolicitaSuspender();// Referencia al applet para llamar a repaint()
 
-    public HiloContador(long contadorInicial, ContadorEj3 applet) {
+    public HiloContador(int contadorInicial, ContadorEj8 applet) {
         this.contador = contadorInicial;
         this.applet = applet;
         this.parar = false;
@@ -38,50 +40,53 @@ class HiloContador extends Thread {
     }
 }
 
-public class ContadorEj3 extends Applet implements ActionListener {
+public class ContadorEj8 extends Applet implements ActionListener {
     private HiloContador hilo1, hilo2;
     private Font fuente;
-    private Button bIniciar1, bDetener1, bIniciar2, bDetener2;
+    private Button bSuspender1, bSuspender2, bFinalizar, bComenzar;
 
     @Override
     public void init() {
         setBackground(Color.yellow);
-        add(bIniciar1 = new Button("Iniciar contador 1"));
-        bIniciar1.addActionListener(this);
-        add(bDetener1 = new Button("Detener contador 1"));
-        bDetener1.addActionListener(this);
+        add(bSuspender1 = new Button("Suspender contador 1"));
+        bSuspender1.addActionListener(this);
 
-        add(bIniciar2 = new Button("Iniciar contador 2"));
-        bIniciar2.addActionListener(this);
-        add(bDetener2 = new Button("Detener contador 2"));
-        bDetener2.addActionListener(this);
+        add(bSuspender2 = new Button("Suspender contador 2"));
+        bSuspender2.addActionListener(this);
 
         fuente = new Font("Serif", Font.BOLD, 26);
     }
 
     @Override
+    public void start() {
+        hilo1 = new HiloContador(0, this); // Inicia con un valor de 0
+        hilo1.start();
+        hilo2 = new HiloContador(100, this); // Inicia con un valor de 100
+        hilo2.start();
+    }
+
+    @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == bIniciar1) {
-            if (hilo1 == null || !hilo1.isAlive()) {
-                hilo1 = new HiloContador(0, this); // Inicia con un valor de 0
+        if(e.getSource() == bComenzar) {
+            if(hilo1.getContador() == 0 && hilo2.getContador() == 0) {
                 hilo1.start();
-                bDetener1.setLabel("Detener contador 1");
-            }
-        } else if (e.getSource() == bDetener1) {
-            if (hilo1 != null) {
-                hilo1.detener();
-                bDetener1.setLabel("Hilo1 Finalizado");
-            }
-        } else if (e.getSource() == bIniciar2) {
-            if (hilo2 == null || !hilo2.isAlive()) {
-                hilo2 = new HiloContador(50, this); // Inicia con un valor de 100
                 hilo2.start();
-                bDetener2.setLabel("Detener contador 2");
+                bComenzar.setEnabled(false);
             }
-        } else if (e.getSource() == bDetener2) {
+        } else if (e.getSource() == bSuspender1) {
+            if (hilo1 != null) {
+                hilo1.();
+                bSuspender1.setLabel("Hilo1 Suspendido");
+            }
+        } else if (e.getSource() == bSuspender2) {
             if (hilo2 != null) {
                 hilo2.detener();
-                bDetener2.setLabel("Hilo2 Finalizado");
+                bSuspender2.setLabel("Hilo2 Suspendido");
+            }
+        } else if (e.getSource() == bFinalizar) {
+            if (hilo1 != null && hilo2 != null) {
+                hilo1.detener();
+                hilo2.detener();
             }
         }
     }
@@ -95,3 +100,7 @@ public class ContadorEj3 extends Applet implements ActionListener {
         g.drawString("Contador 2: " + (hilo2 != null ? hilo2.getContador() : 100), 50, 150);
     }
 }
+
+
+
+
