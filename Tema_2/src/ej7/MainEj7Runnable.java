@@ -1,36 +1,22 @@
 package ej7;
 
-public class MainEj7Runnable implements Runnable {
-    public static int contador = 0;
-
-    @Override
-    public void run() {
-        for (int i = 0; i < 5000; i++) {
-            synchronized (MainEj7Runnable.class) {
-                contador++;
-            }
-        }
-    }
+public class MainEj7Runnable{
 
     public static void main(String[] args) throws InterruptedException {
-        Thread a = new Thread(new MainEj7Runnable());
-        Thread b = new Thread(new MainEj7Runnable());
-        Thread c = new Thread(new MainEj7Runnable());
-        Thread d = new Thread(new MainEj7Runnable());
-        Thread e = new Thread(new MainEj7Runnable());
+        Contador contador = new Contador(0);
 
-        a.start();
-        b.start();
-        c.start();
-        d.start();
-        e.start();
+        Hilo7Runnable a = new Hilo7Runnable(contador);
+        Hilo7Runnable b = new Hilo7Runnable(contador);
+        Hilo7Runnable c = new Hilo7Runnable(contador);
+        Hilo7Runnable d = new Hilo7Runnable(contador);
+        Hilo7Runnable e = new Hilo7Runnable(contador);
 
-        a.join();
-        b.join();
-        c.join();
-        d.join();
-        e.join();
+        a.run();
+        b.run();
+        c.run();
+        d.run();
+        e.run();
 
-        System.out.println("Contador compartido: " + contador);
+        System.out.println("Contador compartido: " + contador.get());
     }
 }
