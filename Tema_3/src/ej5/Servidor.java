@@ -5,36 +5,34 @@ import java.net.*;
 import java.util.Scanner;
 
 public class Servidor {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
-        final int N;
-        System.out.println("Escribe maximo de clientes");
-        N = sc.nextInt();
+        final int n;
+        int puerto = 6005;
+        ServerSocket serverSocket = new ServerSocket(puerto);
 
-        int clienteActual = 1;
+        System.out.println("Escriba el máximo de clientes");
+        n = sc.nextInt();
 
-        try (ServerSocket serverSocket = new ServerSocket(6005)) {
-            System.out.println("Servidor listo para atender clientes...");
+        int cliente_actual = 1;
 
-            while (clienteActual <= N) {
-                Socket socket = serverSocket.accept();
-                System.out.println("Cliente " + clienteActual + " conectado.");
+        while (cliente_actual <= n) {
+            Socket socket = serverSocket.accept();
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            DataInputStream in = new DataInputStream(socket.getInputStream());
 
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            //Enviamos el número de cliente
+            out.writeUTF("Número de cliente: " + cliente_actual);
 
-                out.println("Eres el cliente número: " + clienteActual);
-                String mensaje = in.readLine();
-                System.out.println("Cliente " + clienteActual + " dice: " + mensaje);
+            //Recibimos el mensaje del cliente
+            String m = in.readUTF();
+            System.out.println("Mensaje del cliente " + cliente_actual + ": " + m);
 
-                socket.close();
-                clienteActual++;
-            }
-
-            System.out.println("Número máximo de clientes alcanzado.");
-        } catch (IOException e) {
-            e.printStackTrace();
+            socket.close();
+            cliente_actual++;
         }
+
+        serverSocket.close();
     }
 }
 

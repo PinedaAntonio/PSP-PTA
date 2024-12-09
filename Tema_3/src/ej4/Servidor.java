@@ -1,24 +1,25 @@
 package ej4;
+
 import java.io.*;
 import java.net.*;
 
 public class Servidor {
-    public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(6004)) {
-            System.out.println("Servidor listo...");
-            Socket socket = serverSocket.accept();
-            System.out.println("Cliente conectado.");
+    public static void main(String[] args) throws IOException {
+        int puerto = 6004;
+        ServerSocket servidor = new ServerSocket(puerto);
+        System.out.println("Servidor iniciado, esperando cliente...");
+        Socket socket = servidor.accept();
+        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        DataInputStream in = new DataInputStream(socket.getInputStream());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        //Recibimos el número del cliente
+        int n = in.readInt();
 
-            int n = Integer.parseInt(in.readLine());
-            int nCuadrado = n * n;
-            out.println(nCuadrado);
+        //Enviamos el cuadrado del número
+        out.writeInt(n * n);
 
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //Cerramos conexiones
+        socket.close();
+        servidor.close();
     }
 }

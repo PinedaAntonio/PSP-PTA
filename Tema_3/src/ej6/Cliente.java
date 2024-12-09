@@ -1,54 +1,53 @@
 package ej6;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Scanner;
 
 public class Cliente {
-    public static void main(String[] args) {
-        try {
-            DatagramSocket socket = new DatagramSocket();
-            InetAddress direccionServidor = InetAddress.getByName("localhost"); // Dirección del servidor
-            int puertoServidor = 6006;
-            Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
+        DatagramSocket socket = new DatagramSocket();
+        //Dirección del servidor
+        InetAddress direccion = InetAddress.getLocalHost();
+        int puerto = 6006;
+        Scanner sc = new Scanner(System.in);
 
-            System.out.println("Cliente iniciado. Introduce texto para enviar al servidor (para salir, escribe '*'):");
+        System.out.println("Cliente iniciado.");
+        System.out.println("Introduce texto para enviar al servidor (introduce '*' para salir):");
 
-            while (true) {
-                // Leer entrada del usuario
-                System.out.print("Mensaje: ");
-                String mensaje = scanner.nextLine();
+        while (true) {
+            //Leemos la entrada del usuario
+            System.out.print("Mensaje: ");
+            String m = sc.nextLine();
 
-                // Envío del mensaje al servidor
-                byte[] bufferEnvio = mensaje.getBytes();
-                DatagramPacket paqueteEnvio = new DatagramPacket(bufferEnvio, bufferEnvio.length, direccionServidor, puertoServidor);
-                socket.send(paqueteEnvio);
+            //Enviamos el mensaje al servidor
+            byte[] envio = m.getBytes();
+            DatagramPacket e = new DatagramPacket(envio, envio.length, direccion, puerto);
+            socket.send(e);
 
-                // Finalizar si el mensaje es "*"
-                if (mensaje.equals("*")) {
-                    System.out.println("Conexión finalizada por el cliente.");
-                    break;
-                }
-
-                // Recibir respuesta del servidor con timeout
-                byte[] bufferRespuesta = new byte[1024];
-                DatagramPacket paqueteRespuesta = new DatagramPacket(bufferRespuesta, bufferRespuesta.length);
-                socket.setSoTimeout(4000); // 4000 ms = 4 segundos
-
-                try {
-                    socket.receive(paqueteRespuesta);
-                    String respuesta = new String(paqueteRespuesta.getData(), 0, paqueteRespuesta.getLength());
-                    System.out.println("Respuesta del servidor: " + respuesta);
-                } catch (java.net.SocketTimeoutException e) {
-                    System.out.println("Tiempo de espera agotado. Paquete perdido.");
-                }
+            //Cerramos conexión si el mensaje recibido es un "*"
+            if (m.equals("*")) {
+                System.out.println("Conexión cerrada por el cliente.");
+                break;
             }
 
-            socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            //Recibimos respuesta del servidor con timeout
+            byte[] respuesta = new byte[1024];
+            DatagramPacket paqueteRespuesta = new DatagramPacket(respuesta, respuesta.length);
+            socket.setSoTimeout(4000); //Timeout de 4 segundos en milisegundos
+
+            try {
+                socket.receive(paqueteRespuesta);
+                String r = new String(paqueteRespuesta.getData(), 0, paqueteRespuesta.getLength());
+                System.out.println("Respuesta del servidor: " + r);
+            } catch (java.net.SocketTimeoutException ex) {
+                System.out.println("Tiempo de espera agotado. Paquete perdido.");
+            }
         }
+
+        socket.close();
     }
 }
 

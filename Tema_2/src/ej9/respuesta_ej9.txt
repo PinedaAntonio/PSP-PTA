@@ -1,0 +1,1 @@
+La salida sólo es la esperada a veces en el caso de que se ponga un 3 en el Productor y un 0 en el Consumidor, pero no es un método fiable, en la mayoría de casos no saldrá la salida esperada al quitar los sleeps.
