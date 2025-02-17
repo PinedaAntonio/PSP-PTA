@@ -5,8 +5,7 @@ public class Saldo {
 
     Saldo(int c) throws InterruptedException {
         this.c = c;
-        int random = (int)(Math.random()*10000);
-        Thread.sleep(random);
+        Thread.sleep(1000);
     }
 
     public synchronized void incrementa(int add, Thread hilo) {
@@ -16,8 +15,7 @@ public class Saldo {
     }
 
     public synchronized int get() throws InterruptedException {
-        int random = (int)(Math.random()*10000);
-        Thread.sleep(random);
+        Thread.sleep(1000);
         return c;
     }
 }
